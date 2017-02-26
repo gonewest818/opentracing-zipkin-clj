@@ -16,5 +16,5 @@
     => (throws Exception #"missing required settings"))
   (fact "missing service name"
     (make-zipkin-tracer {:zipkin-apm-uri "http://localhost:9411/api/v1/spans"})
-    => (throws Exception #E"missing required settings")))
+    => (throws Exception #"missing required settings")))
 
