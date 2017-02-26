@@ -25,12 +25,16 @@
   opentracing-clj."
   [settings]
   "Create Zipkin/Brave tracer using the settings provided"
-  (let [sender (OkHttpSender/create (settings :zipkin-apm-uri))
-        reporter (-> sender
-                     AsyncReporter/builder
-                     .build)
-        brave (-> (Tracer/newBuilder)
-                  (.localServiceName (settings :zipkin-apm-service-name))
-                  (.reporter reporter)
-                  .build)]
-    (BraveTracer/wrap brave)))
+  (let [uri (settings :zipkin-apm-uri)
+        srv (settings :zipkin-apm-service-name)]
+    (if (and uri srv)
+      (let [sender (OkHttpSender/create uri)
+            reporter (-> sender
+                         AsyncReporter/builder
+                         .build)
+            brave (-> (Tracer/newBuilder)
+                      (.localServiceName srv)
+                      (.reporter reporter)
+                      .build)]
+        (BraveTracer/wrap brave))
+      (throw (Exception. "make-zipkin-tracer: missing required settings")))))
